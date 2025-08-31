@@ -1,0 +1,67 @@
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+const int N = 503;
+struct Edge {
+	int u, v;
+	double w;
+	Edge(const int _u, const int _v, const double _w)
+	: u(_u), v(_v), w(_w) { }
+	bool operator<(const Edge& A) const
+	{ return w < A.w; }
+};
+vector<Edge> e;
+vector<double> ans;
+pair<int, int> a[N];
+int fa[N], n;
+
+double dis(const pair<int, int>& x, const pair<int, int>& y)
+{ return sqrt((x.first - y.first) * (x.first - y.first) + (x.second - y.second) * (x.second - y.second)); }
+
+int fnd(const int x) {
+	if(fa[x] != x)
+		fa[x] = fnd(fa[x]);
+	return fa[x];
+}
+
+void Kruskal() {
+	sort(e.begin(), e.end());
+	for(int i = 0; i <= n; ++i)
+		fa[i] = i;
+	for(int i = 0; i < e.size(); ++i) {
+		int u = fnd(e[i].u), v = fnd(e[i].v);
+		if(u == v)
+			continue;
+		fa[u] = v;
+		ans.push_back(e[i].w);
+	}
+}
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin.tie(NULL);
+	int _T;
+	cin >> _T;
+	for(int k; _T--; cout.put('\n')) {
+		cin >> k >> n;
+		for(int i = 1; i <= n; ++i) {
+			cin >> a[i].first >> a[i].second;
+			for(int j = 1; j < i; ++j) {
+				const double w = dis(a[i], a[j]);
+				e.push_back(Edge(i, j, w));
+				e.push_back(Edge(j, i, w));
+			}
+		}
+		Kruskal();
+		sort(ans.begin(), ans.end());
+		cout << fixed << setprecision(2) << (k >= 2? ans[n - k - 1]: ans.back());
+		e.clear();
+		ans.clear();
+	}
+	cout.flush();
+	return 0;
+}

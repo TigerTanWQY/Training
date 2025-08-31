@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+constexpr const int dxy[4][3]{{0, -1}, {-1, 0}, {1, 0}, {0, 1}};
+constexpr const int N = 13;
+vector<pair<int, bool>> G[N * N];
+char s[N][N];
+int dis[N * N];
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin.tie(nullptr);
+	int n, m, T;
+	cin >> n >> m >> T;
+	int sx, sy, ex, ey;
+	for(int i = 1; i <= n; ++i) {
+		cin >> (s[i] + 1);
+		for(int j = 1; j <= m; ++j)
+			if(s[i][j] == 'S') {
+				sx = i;
+				sy = j;
+			} else if(s[i][j] == 'G') {
+				ex = i;
+				ey = j;
+			}
+	}
+	auto chg = [&n](const int& x, const int& y) -> int
+	{ return (x - 1) * n + y - 1; };
+	for(int i = 1; i <= n; ++i)
+		for(int j = 1; j <= m; ++j)
+			for(int k = 0; k < 4; ++k) {
+				int tx = i + dxy[k][0], ty = j + dxy[k][1];
+				if(1 <= tx && tx <= n && 1 <= ty && ty <= m)
+					G[chg(i, j)].push_back({chg(tx, ty), s[tx][ty] != '.'});
+			}
+	int L = 0, R = 1e9 + 1;
+	auto chk = [&](int d) -> bool {
+		;
+	};
+	while(L + 1 < R) {
+		int M = (L + R) >> 1;
+		if(chk(M))
+			L = M;
+		else
+			R = M;
+	}
+	cout << L << endl;
+	return 0;
+}

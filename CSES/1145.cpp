@@ -1,0 +1,25 @@
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+
+constexpr const int N = 2e5 + 3;
+int a[N], f[N];
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin.tie(nullptr);
+	int n;
+	cin >> n;
+	for(int i = 1; i <= n; ++i)
+		cin >> a[i];
+	memset(f, 0x3f, sizeof(f));
+	int top = 0;
+	for(int i = 1; i <= n; ++i) {
+		const int j = lower_bound(f + 1, f + top + 1, a[i]) - f;
+		f[j] = a[i];
+		top = max(top, j);
+	}
+	cout << top << endl;
+	return 0;
+}
