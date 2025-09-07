@@ -1,5 +1,5 @@
 #include<bits/stdc++.h>
-#define re register int
+#define re int
 using namespace std;
 
  int read()
