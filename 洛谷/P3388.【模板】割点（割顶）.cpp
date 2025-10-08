@@ -5,6 +5,7 @@ constexpr const int N = 5e5 + 3;
 vector<vector<int>> vDCC;
 vector<int> G[N];
 stack<int> stk;
+bool b[N];
 int low[N], dfn[N], idx = 0;
 
 void dfs(int u, int fa) {
@@ -48,12 +49,17 @@ int main() {
 			dfs(u, 0);
 			for(; !stk.empty(); stk.pop());
 		}
-	cout << vDCC.size() << '\n';
-	for(const auto& c: vDCC) {
-		cout << c.size() << ' ';
+	vector<int> ans;
+	for(const auto& c: vDCC)
 		for(const auto& u: c)
-			cout << u << ' ';
-		cout.put('\n');
-	}
-	cout.flush(); return 0;
+			if(b[u])
+				ans.push_back(u);
+			else
+				b[u] = true;
+	sort(begin(ans), end(ans));
+	ans.erase(unique(begin(ans), end(ans)), cend(ans));
+	cout << ans.size() << '\n';
+	for(const auto& u: ans)
+		cout << u << ' ';
+	cout << endl; return 0;
 }

@@ -1,21 +1,15 @@
-#include <iostream>
-#include <vector>
-#include <bitset>
-#include <stack>
-#include <array>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 using LL = long long;
 
-constexpr const int N = 10'003;
-array<vector<int>, N> G;
-bitset<N> ins;
+constexpr const int N = 1e4 + 3;
+vector<int> G[N];
 stack<int> stk;
-array<LL, N> f;
-array<int, N> dfn, low, bel, a;
-int idx = 0, cnt = 0;
+bool ins[N];
+int a[N], dfn[N], low[N], bel[N], idx = 0, cnt = 0;
+LL f[N];
 
-void dfs(const int& u) {
+void dfs(int u) {
 	dfn[u] = low[u] = ++idx;
 	stk.push(u);
 	ins[u] = true;
@@ -26,9 +20,7 @@ void dfs(const int& u) {
 		} else if(ins[v])
 			low[u] = min(low[u], dfn[v]);
 	if(dfn[u] == low[u]) {
-		++cnt;
-		LL tot = 0;
-		f[cnt] = 0;
+		LL tot = f[++cnt] = 0;
 		while(!stk.empty()) {
 			int v = stk.top();
 			stk.pop();
@@ -46,8 +38,7 @@ void dfs(const int& u) {
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
+	cin.tie(nullptr)->sync_with_stdio(false);
 	int n, m;
 	cin >> n >> m;
 	for(int i = 1; i <= n; ++i)
@@ -59,10 +50,6 @@ int main() {
 	for(int u = 1; u <= n; ++u)
 		if(!dfn[u])
 			dfs(u);
-	LL ans = 0;
-	for(int u = 1; u <= n; ++u)
-		ans = max(ans, f[u]);
-	cout << ans;
-	cout.flush();
+	cout << *max_element(f + 1, f + n + 1) << endl;
 	return 0;
 }

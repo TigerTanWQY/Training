@@ -1,14 +1,11 @@
-#include <iostream>
-#include <vector>
-#include <bitset>
-#include <queue>
+#include <bits/stdc++.h>
 using namespace std;
 
-const int N = 200'003;
+constexpr const int N = 2e5 + 3;
 vector<int> G[N];
-bitset<N> vis;
+bool vis[N];
 
-void dfs(const int& u) {
+void dfs(int u) {
 	vis[u] = true;
 	for(const auto& v: G[u])
 		if(!vis[v]) {
@@ -17,10 +14,10 @@ void dfs(const int& u) {
 		}
 }
 
-void bfs(const int& s) {
+void bfs(int rt) {
 	queue<int> q;
-	q.push(s);
-	vis[s] = true;
+	q.push(rt);
+	vis[rt] = true;
 	while(!q.empty()) {
 		int u = q.front();
 		q.pop();
@@ -34,8 +31,7 @@ void bfs(const int& s) {
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
+	cin.tie(nullptr)->sync_with_stdio(false);
 	int n, m;
 	cin >> n >> m;
 	for(int u, v; m--; ) {
@@ -44,8 +40,7 @@ int main() {
 		G[v].push_back(u);
 	}
 	dfs(1);
-	vis = 0;
+	memset(vis, 0, sizeof vis);
 	bfs(1);
-	cout.flush();
-	return 0;
+	cout.flush(); return 0;
 }

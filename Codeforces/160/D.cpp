@@ -1,8 +1,7 @@
-#include <cstdio>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
-const int N=100010;
-inline void read(int &x){
+constexpr const int N=1e5+3;
+void read(int &x){
 	x=0;int f=1;char w=getchar();
 	while(w<'0'||w>'9'){if(w=='-')f=-1;w=getchar();}
 	while(w<='9'&&w>='0'){x=x*10+w-'0';w=getchar();}
@@ -38,15 +37,14 @@ int main(){
 	for(int i=1;i<=n;i++){read(a[i].a);read(a[i].b);read(a[i].v);a[i].id=i;}
 	sort(a+1,a+n+1,cmp);for(int i=1;i<=m;i++)f[i]=i;
 	for(int i=1;i<=n;){
-		top=cnt=0;esum=1;nt++;int j=i;while(a[j+1].v==a[i].v)j++;
+		top=cnt=0;esum=1;nt++;int j=i;for(;a[j+1].v==a[i].v;++j);
 		for(int k=i;k<=j;k++)
 			if(fnd(a[k].a)^fnd(a[k].b)){
 				int fa=fnd(a[k].a),fb=fnd(a[k].b);
-				add(fa,fb,a[k].id),add(fb,fa,a[k].id);
+				add(fa,fb,a[k].id);add(fb,fa,a[k].id);
 				about[fa]=about[fb]=nt;
-				st[++top]=fa,st[++top]=fb;
-			}
-			else ans[a[k].id]=-1;
+				st[++top]=fa;st[++top]=fb;
+			} else ans[a[k].id]=-1;
 		for(int k=1;k<=top;k++)if(vis[st[k]]^nt)dfs(st[k],0);
 		for(;i<=j;i++)f[fnd(a[i].a)]=fnd(a[i].b);
 	}

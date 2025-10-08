@@ -1,13 +1,13 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-constexpr const int N = 5003, M = 20003;
+constexpr const int N = 5e5 + 3, M = 2e6 + 3;
 vector<vector<int>> eDCC;
 vector<pair<int, int>> G[N];
-pair<int, int> e[M];
+pair<int, int> E[M];
 stack<int> stk;
 bool vis[N], ins[M];
-int dfn[N], low[N], bel[N], d[N], cnt = 0, idx = 0;
+int dfn[N], low[N], idx = 0;
 
 void dfs(int u) {
 	dfn[u] = low[u] = ++idx;
@@ -25,14 +25,15 @@ void dfs(int u) {
 			low[u] = min(low[u], dfn[v]);
 	}
 	if(dfn[u] == low[u]) {
-		++cnt;
+		vector<int> c;
 		while(!stk.empty()) {
 			int v = stk.top();
 			stk.pop();
-			bel[v] = cnt;
+			c.push_back(v);
 			if(v == u)
 				break;
 		}
+		eDCC.push_back(c);
 	}
 }
 
@@ -41,22 +42,19 @@ int main() {
 	int n, m;
 	cin >> n >> m;
 	for(int i = 1; i <= m; ++i) {
-		cin >> e[i].first >> e[i].second;
-		G[e[i].first].push_back({e[i].second, i});
-		G[e[i].second].push_back({e[i].first, i});
+		cin >> E[i].first >> E[i].second;
+		G[E[i].first].push_back({E[i].second, i});
+		G[E[i].second].push_back({E[i].first, i});
 	}
 	for(int u = 1; u <= n; ++u)
 		if(!vis[u])
 			dfs(u);
-	for(int i = 1; i <= m; ++i)
-		if(bel[e[i].first] != bel[e[i].second]) {
-			++d[bel[e[i].first]];
-			++d[bel[e[i].second]];
-		}
-	int ans = 0;
-	for(int i = 1; i <= cnt; ++i)
-		if(d[i] == 1)
-			++ans;
-	cout << (ans + 1 >> 1) << endl;
-	return 0;
+	cout << eDCC.size() << '\n';
+	for(const auto& c: eDCC) {
+		cout << c.size() << ' ';
+		for(const auto& u: c)
+			cout << u << ' ';
+		cout.put('\n');
+	}
+	cout.flush(); return 0;
 }
