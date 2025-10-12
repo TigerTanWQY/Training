@@ -1,17 +1,13 @@
-#include <iostream>
-#include <vector>
-#include <stack>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
-constexpr const int N = 100'003;
-vector<int> G[N], CRT[N * 2];
+constexpr const int N = 1e5 + 3;
+vector<int> G[N], CRT[N<<1];
 stack<int> stk;
-int dfn[N], low[N], n, idx = 0, cnt = 0;
-int sz[N * 2], f[N * 2], tot;
+int dfn[N], low[N], sz[N<<1], f[N<<1], n, tot = 0, idx = 0, cnt = 0;
 long long ans = 0;
 
-void tarjan(const int& u) {
+void tarjan(int u) {
 	++tot;
 	dfn[u] = low[u] = ++idx;
 	stk.push(u);
@@ -23,12 +19,12 @@ void tarjan(const int& u) {
 			if(low[v] == dfn[u]) {
 				++cnt;
 				while(!stk.empty()) {
-					int w = stk.top();
+					int x = stk.top();
 					stk.pop();
-					CRT[w].push_back(cnt);
-					CRT[cnt].push_back(w);
+					CRT[x].push_back(cnt);
+					CRT[cnt].push_back(x);
 					++sz[cnt];
-					if(w == v)
+					if(x == v)
 						break;
 				}
 				CRT[cnt].push_back(u);
@@ -39,7 +35,7 @@ void tarjan(const int& u) {
 			low[u] = min(low[u], dfn[v]);
 }
 
-void dfs(const int& u, const int& fa) {
+void dfs(int u, int fa) {
 	f[u] = (u <= n);
 	for(const auto& v: CRT[u])
 		if(v ^ fa) {
@@ -51,8 +47,7 @@ void dfs(const int& u, const int& fa) {
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
+	cin.tie(nullptr)->sync_with_stdio(false);
 	int m;
 	cin >> n >> m;
 	cnt = n;
@@ -61,13 +56,12 @@ int main() {
 		G[u].push_back(v);
 		G[v].push_back(u);
 	}
-	for(int u = 1; u <= n; ++u)
-		if(!dfn[u]){
+	for(int i = 1; i <= n; ++i)
+		if(!dfn[i]) {
 			tot = 0;
-			tarjan(u);
-			dfs(u, 0);
+			tarjan(i);
+			dfs(i, 0);
 		}
-	cout << ans;
-	cout.flush();
+	cout << ans << endl;
 	return 0;
 }
