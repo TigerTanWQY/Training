@@ -1,25 +1,21 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <bitset>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
-constexpr const int N = 100'003, D = 53, M = N * D;
-vector<int> G[N], GC[N];
-int stk[M], top = 0;
-bitset<M> ins, vis;
+constexpr const int N = 1e5 + 3, D = 53, M = N * D;
+vector<int> G[M], GC[M];
+int stk[N], top = 0;
+bitset<M> vis, ins;
 bitset<N> day[D];
-int low[M], dfn[M], bel[M], sz[M], f[M];
-int n, d, idx = 0, cnt = 0;
+char s[D];
+int low[M], dfn[M], bel[M], sz[M], f[M], n, d, idx = 0, cnt = 0;
 
-int gw(const int& x)
+int gw(int x)
 { return (x - 1) % n + 1; }
 
-int gd(const int& x)
+int gd(int x)
 { return (x - 1) / n + 1; }
 
-void tarjan(const int& u) {
+void tarjan(int u) {
 	low[u] = dfn[u] = ++idx;
 	stk[++top] = u;
 	ins[u] = true;
@@ -49,7 +45,7 @@ void tarjan(const int& u) {
 	}
 }
 
-int get(const int& u) {
+int get(int u) {
     if(ins[u])
 		return f[u];
     for(const auto& v: GC[u])
@@ -60,8 +56,7 @@ int get(const int& u) {
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
+	cin.tie(nullptr)->sync_with_stdio(false);
 	int m;
 	cin >> n >> m >> d;
 	for(int u, v; m--; ) {
@@ -70,7 +65,6 @@ int main() {
 			G[n * (j - 1) + u].push_back(n * (j % d) + v);
 	}
 	for(int i = 1; i <= n; ++i) {
-		string s;
 		cin >> s;
 		for(int j = 1; j <= d; ++j)
 			day[j][i] = (s[j - 1] == '1');
@@ -83,7 +77,6 @@ int main() {
 			if(bel[u] != bel[v])
 				GC[bel[u]].push_back(bel[v]);
 	ins.reset();
-	cout << get(bel[1]);
-	cout.flush();
+	cout << get(bel[1]) << endl;
 	return 0;
 }

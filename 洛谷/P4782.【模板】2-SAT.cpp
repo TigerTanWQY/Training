@@ -1,19 +1,13 @@
-#include <iostream>
-#include <vector>
-#include <bitset>
-#include <stack>
-#include <array>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
-constexpr const int N = 2'000'003;
-array<vector<int>, N> G;
+constexpr const int N = 2e6 + 3; // 2倍空间
+vector<int> G[N];
 stack<int> stk;
-bitset<N> ins;
-array<int, N> low, dfn, bel;
-int idx = 0, cnt = 0;
+bool ins[N];
+int low[N], dfn[N], bel[N], idx = 0, cnt = 0;
 
-void dfs(const int& u) {
+void dfs(int u) {
 	low[u] = dfn[u] = ++idx;
 	stk.push(u);
 	ins[u] = true;
@@ -26,8 +20,7 @@ void dfs(const int& u) {
 	if(low[u] == dfn[u]) {
 		++cnt;
 		while(!stk.empty()) {
-			int v = stk.top();
-			stk.pop();
+			int v = stk.top(); stk.pop();
 			ins[v] = false;
 			bel[v] = cnt;
 			if(v == u)
@@ -37,8 +30,7 @@ void dfs(const int& u) {
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
+	cin.tie(nullptr)->sync_with_stdio(false);
 	int n, m;
 	cin >> n >> m;
 	for(int u, x, v, y; m--; ) {
@@ -46,17 +38,16 @@ int main() {
 		G[u + (x ^ 1) * n].push_back(v + y * n);
 		G[v + (y ^ 1) * n].push_back(u + x * n);
 	}
-	for(int i = 1; i <= 2 * n; ++i)
+	for(int i = 1; i <= n * 2; ++i)
 		if(!dfn[i])
 			dfs(i);
-	for(int u = 1; u <= n; ++u) // 判无解
-		if(bel[u] == bel[u + n]) {
-			cout << "IMPOSSIBLE";
+	for(int i = 1; i <= n; ++i)
+		if(bel[i] == bel[i + n]) {
+			cout << "IMPOSSIBLE" << endl;
 			return 0;
 		}
 	cout << "POSSIBLE\n";
-	for(int u = 1; u <= n; u++)
-		cout << (bel[u] > bel[u + n]) << ' ';
-	cout.flush();
-	return 0;
+	for(int i = 1; i <= n; ++i)
+		cout << (bel[i] > bel[i + n]) << ' ';
+	cout << endl; return 0;
 }
