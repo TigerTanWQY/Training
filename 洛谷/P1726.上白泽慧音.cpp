@@ -1,20 +1,14 @@
-#include <iostream>
-#include <vector>
-#include <bitset>
-#include <stack>
-#include <array>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
-constexpr const int N = 5'003;
+constexpr const int N = 5003;
 vector<vector<int>> scc;
-array<vector<int>, N> G;
+vector<int> G[N];
 stack<int> stk;
-bitset<N> ins;
-array<int, N> low, dfn;
-int idx = 0;
+bool ins[N];
+int low[N], dfn[N], idx = 0;
 
-void dfs(const int& u) {
+void dfs(int u) {
 	low[u] = dfn[u] = ++idx;
 	stk.push(u);
 	ins[u] = true;
@@ -34,26 +28,25 @@ void dfs(const int& u) {
 			if(v == u)
 				break;
 		}
-		sort(c.begin(), c.end());
+		sort(begin(c), end(c));
 		scc.push_back(c);
 	}
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
+	cin.tie(nullptr)->sync_with_stdio(false);
 	int n, m;
 	cin >> n >> m;
-	for(int u, v, type; m--; ) {
-		cin >> u >> v >> type;
+	for(int u, v, tp; m--; ) {
+		cin >> u >> v >> tp;
 		G[u].push_back(v);
-		if(type == 2)
+		if(tp == 2)
 			G[v].push_back(u);
 	}
-	for(int u = 1; u <= n; ++u)
-		if(!dfn[u])
-			dfs(u);
-	sort(scc.begin(), scc.end());
+	for(int i = 1; i <= n; ++i)
+		if(!dfn[i])
+			dfs(i);
+	sort(begin(scc), end(scc));
 	int maxw = 0, ansi = 0;
 	for(int i = 0; i < scc.size(); ++i)
 		if(scc[i].size() > maxw) {
@@ -63,6 +56,5 @@ int main() {
 	cout << maxw << '\n';
 	for(const auto& u: scc[ansi])
 		cout << u << ' ';
-	cout.flush();
-	return 0;
+	cout << endl; return 0;
 }
