@@ -1,18 +1,17 @@
 #include <bits/stdc++.h>
 using namespace std;
-#include <ext/pb_ds/assoc_container.hpp>
 
 constexpr const int M = 2e5 + 3, N = M * 8, K = 128;
-__gnu_pbds::gp_hash_table<int, int> idx;
+unordered_map<int, int> idx;
 vector<int> G[N];
 string s[M];
 int d[N], f[N], cnt = 0;
 
-inline int hsh(const string& t)
-{ return (t[0] - 'A') * K * K + (t[1] - 'A') * K + (t[2] - 'A'); }
+auto hsh = [](const string& t)->int
+{ return (t[0] - 'A') * K * K + (t[1] - 'A') * K + (t[2] - 'A'); };
 
 void bfs() {
-	memset(f, 0, sizeof(f));
+	memset(f, 0, sizeof f);
 	queue<int> q;
 	for(int i = 1; i <= cnt; ++i)
 		if(!d[i]) {
@@ -20,7 +19,7 @@ void bfs() {
 			q.push(i);
 		}
 	while(!q.empty()) {
-		const int u = q.front();
+		int u = q.front();
 		q.pop();
 		for(const auto& v: G[u]) {
 			--d[v];
@@ -37,13 +36,12 @@ void bfs() {
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
+	cin.tie(nullptr)->sync_with_stdio(false);
 	int n;
 	cin >> n;
 	for(int i = 1; i <= n; ++i) {
 		cin >> s[i];
-		const int u = hsh(s[i].substr(0, 3)), v = hsh(s[i].substr(s[i].size() - 3, 3));
+		int u = hsh(s[i].substr(0, 3)), v = hsh(s[i].substr(s[i].size() - 3, 3));
 		if(!idx[u])
 			idx[u] = ++cnt;
 		if(!idx[v])
@@ -52,16 +50,14 @@ int main() {
 		++d[idx[u]];
 	}
 	bfs();
-	for(int i = 1; i <= n; ++i) {
-		const int u = hsh(s[i].substr(s[i].size() - 3, 3));
+	for(int i = 1; i <= n; cout.put('\n'), ++i) {
+		int u = hsh(s[i].substr(s[i].size() - 3, 3));
 		if(f[idx[u]] == 1)
 			cout << "Takahashi";
 		else if(f[idx[u]] == -1)
 			cout << "Aoki";
 		else if(f[idx[u]] == 0)
 			cout << "Draw";
-		cout.put('\n');
 	}
-	cout.flush();
-	return 0;
+	cout.flush(); return 0;
 }
