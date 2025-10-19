@@ -1,37 +1,27 @@
-#include <iostream>
-#include <vector>
-#include <bitset>
-#include <array>
+#include <bits/stdc++.h>
 using namespace std;
+using U = unsigned;
 
-constexpr const int N = 100'003;
-array<vector<int>, N> v, w;
-array<bitset<30>, N> a;
+constexpr const U N = 1e5 + 3;
+vector<U> v[N], w[N];
+U a[N];
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
-	int n, m;
+	cin.tie(nullptr)->sync_with_stdio(false);
+	U n, m;
 	cin >> n >> m;
-	a.fill((1 << 30) - 1);
-	for(int i, j, x; m--; ) {
+	memset(a, 0xff, sizeof a);
+	for(U i, j, x; m--; ) {
 		cin >> i >> j >> x;
-		a[i] &= x;
-		a[j] &= x;
-		v[i].push_back(j);
-		v[j].push_back(i);
-		w[i].push_back(x);
-		w[j].push_back(x);
+		a[i] &= x; a[j] &= x;
+		v[i].push_back(j); v[j].push_back(i);
+		w[i].push_back(x); w[j].push_back(x);
 	}
-	for(int i = 1; i <= n; ++i) {
+	for(U i = 1; i <= n; ++i) {
 		a[i] = 0;
-		for(int j = 0; j < v[i].size(); ++j)
-			if(i != v[i][j])
-				a[i] |= w[i][j] - a[v[i][j]].to_ullong();
-			else
-				a[i] |= w[i][j];
-		cout << a[i].to_ullong() << ' ';
+		for(size_t j = 0; j < v[i].size(); ++j)
+			a[i] |= w[i][j] - (i != v[i][j]? a[v[i][j]]: 0);
+		cout << a[i] << ' ';
 	}
-	cout.flush();
-	return 0;
+	cout << endl; return 0;
 }

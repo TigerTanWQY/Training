@@ -1,46 +1,61 @@
-#include <iostream>
-#include <vector>
-#include <bitset>
-#include <array>
+#include <bits/stdc++.h>
 using namespace std;
 
-constexpr const int N = 400'003;
-array<vector<int>, N> G;
-array<int, N> type;
+constexpr const int N = 4e5 + 3;
+vector<int> G[N];
+bool vis[N], f[N];
+int ans[N];
 
-void dfs(const int& u, const int& fa) {
+void dfs1(int u) {
+	f[u] = vis[u] = true;
+	ans[u] = 1;
 	for(const auto& v: G[u])
-		if(v == fa || v == u)
-			type[v] = 1;
-		else if(!type[v]) {
-			type[v] = 1;
-			dfs(v, u);
-		} else if(type[v] == 1)
-			type[v] = 2;
-		else
-			type[v] = -1;
+		if(!f[v])
+			dfs1(v);
+		else if(vis[v])
+			ans[v] = -1;
+		else if(ans[v] >= 0)
+			ans[v] = 2;
+	vis[u] = false;
+}
+
+void dfs2(int u, int t) {
+	f[u] = true;
+	if(ans[u] != -1)
+		ans[u] = t;
+	for(const auto& v: G[u])
+		if(!f[v])
+			dfs2(v, t);
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
+	cin.tie(nullptr)->sync_with_stdio(false);
 	int _T;
 	cin >> _T;
-	for(int n, m; _T--; ) {
+	for(int n, m; _T--; cout.put('\n')) {
 		cin >> n >> m;
 		for(int u, v; m--; ) {
 			cin >> u >> v;
 			G[u].push_back(v);
 		}
-		type[1] = 1;
-		dfs(1, 0);
-		for(int u = 1; u <= n; ++u)
-			cout << type[u] << ' ';
-		cout << '\n';
-		/** reset **/
-		G.fill({});
-		type.fill({});
+		dfs1(1);
+		for(int i = 1; i <= n; ++i)
+			f[i] = 0;
+		for(int i = 1; i <= n; ++i)
+			if(ans[i] == 2)
+				dfs2(i, 2);
+		for(int i = 1; i <= n; ++i)
+			f[i] = 0;
+		for(int i = 1; i <= n; ++i)
+			if(ans[i] == -1)
+				dfs2(i, -1);
+		for(int i = 1; i <= n; ++i)
+			cout << ans[i] << ' ';
+		for(int i = 1; i <= n; ++i) {
+			G[i].clear();
+			ans[i] = 0;
+			vis[i] = f[i] = false;
+		}
 	}
-	cout.flush();
-	return 0;
+	cout.flush(); return 0;
 }
