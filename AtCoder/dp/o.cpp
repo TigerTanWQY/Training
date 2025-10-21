@@ -1,29 +1,27 @@
-#include <iostream>
-#include <bitset>
-#include <array>
+#include <bits/stdc++.h>
 using namespace std;
+using U = unsigned;
 
-constexpr const int P = 1e9 + 7, N = 21;
-array<bitset<N>, N> a;
-array<long long, 1 << N> f;
+constexpr const U P = 1e9 + 7, N = 21;
+bool a[N][N];
+unsigned long long f[1<<N];
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
-	int n;
+	cin.tie(nullptr)->sync_with_stdio(false);
+	U n;
 	cin >> n;
-	for(int i = 0, x; i < n; ++i)
-		for(int j = 0; j < n; ++j) {
+	for(U i = 0, x; i < n; ++i)
+		for(U j = 0; j < n; ++j) {
 			cin >> x;
-			a[i][j] = !!x;
+			a[i][j] = x;
 		}
 	f[0] = 1;
-	for(int j = 0; j < (1 << n); ++j) {
-		int cnt = __builtin_popcount(j);
-		for(int i = 0; i < n; ++i)
-			if(a[cnt][i] && (j & (1 << i)) == 0)
-				f[j | (1 << i)] = (f[j | (1 << i)] + f[j]) % P;
+	for(U j = 0; j < (1U << n); ++j) {
+		U cnt = popcount(j);
+		for(U i = 0; i < n; ++i)
+			if(a[cnt][i] && !(j & (1U << i)))
+				f[j | (1U << i)] = (f[j | (1U << i)] + f[j]) % P;
 	}
-	cout << f[(1 << n) - 1];
+	cout << f[(1U << n) - 1];
 	return 0;
 }
