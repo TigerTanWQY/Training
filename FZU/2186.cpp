@@ -1,46 +1,34 @@
-#include <iostream>
-#include <bitset>
-#include <array>
-#include <queue>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
 constexpr const int dxy[][4]{{0, -1, 1, 0}, {-1, 0, 0, 1}};
-constexpr const int N = 103;
-constexpr const int K = 11;
+constexpr const int N = 103, K = 11;
 struct Node
-{ int x, y, step; };
-array<bitset<N>, N> vis;
-array<array<int, K>, K> dis;
-array<array<int, K>, 1 << K> f;
-array<array<int, N>, N> G;
-int n, m;
+{ int x, y, z; };
+bool vis[N][N];
+int dis[K][K], f[1<<K][K], G[N][N], n, m;
 
-
-void bfs(const int& x, const int& y, const int& z) {
+void bfs(int sx, int sy, int sz) {
 	queue<Node> q;
-	q.push({x, y, 0});
-	vis.fill({});
-	vis[x][y] = 1;
+	q.push({sx, sy, 0});
+	memset(vis, 0, sizeof vis);
+	vis[sx][sy] = 1;
 	while(!q.empty()) {
-		auto u = q.front();
+		auto [x, y, z] = q.front();
 		q.pop();
-		if(G[u.x][u.y] > 0)
-			dis[z][G[u.x][u.y]] = u.step;
-		for(int i = 0; i < 4; ++i) {
-			Node v{u.x + dxy[0][i], u.y + dxy[1][i], u.step + 1};
-			if(0 <= v.x && v.x < n && 0 <= v.y && v.y < m && !vis[v.x][v.y] && G[v.x][v.y] >= 0) {
-				vis[v.x][v.y] = true;
-				q.push(v);
+		if(G[x][y] > 0)
+			dis[sz][G[x][y]] = z;
+		for(int i = 0; i < 4; ++i)
+			if(0 <= x && x < n && 0 <= y && y < m && !vis[x][y] && G[x][y] >= 0) {
+				vis[x][y] = true;
+				q.push({x + dxy[0][i], y + dxy[1][i], z + 1});
 			}
-		}
 	}
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
-	while(cin >> n >> m) {
+	cin.tie(nullptr)->sync_with_stdio(false);
+	for(; cin >> n >> m; cout.put('\n')) {
 		int cnt = 0;
 		for(int i = 0; i < n; ++i)
 			for(int j = 0; j < m; ++j){
@@ -49,16 +37,16 @@ int main() {
 					G[i][j] = ++cnt;
 			}
 		if(G[0][0] < 0) {
-			cout << "-1\n";
+			cout << "-1";
 			continue;
 		} else if(!cnt) {
-			cout << "0\n";
+			cout << "0";
 			continue;
 		}
 		G[0][0] = 0;
 		for(auto& c: dis)
 			for(auto& i: c)
-				i = 0x3f3f3f3f;
+				i = 1e9;
 		bfs(0, 0, 0);
 		for(int i = 0; i < n; ++i)
 			for(int j = 0; j < m; ++j)
@@ -67,7 +55,7 @@ int main() {
 		int tot = 1 << cnt;
 		for(auto& c: f)
 			for(auto& i: c)
-				i = 0x3f3f3f3f;
+				i = 1e9;
 		for(int i = 1; i < tot; ++i)
 			for(int j = 0; j < cnt; ++j)
 				if(i & 1 << j) {
@@ -80,13 +68,13 @@ int main() {
 						if(l & 1 << k)
 							f[i][j + 1] = min(f[i][j + 1], f[l][k + 1] + dis[k + 1][j + 1]);
 				}
-		int ans = 0x3f3f3f3f;
+		int ans = 1e9;
 		for(int i = 1; i <= cnt; ++i)
 			ans = min(ans, f[tot - 1][i] + dis[0][i]);
-		if(ans == 0x3f3f3f3f)
-			cout << "-1\n";
+		if(ans == 1e9)
+			cout << "-1";
 		else
-			cout << ans << '\n';
+			cout << ans;
 	}
-	return 0;
+	cout.flush(); return 0;
 }

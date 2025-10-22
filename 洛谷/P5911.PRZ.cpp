@@ -1,16 +1,13 @@
-#include <iostream>
-#include <array>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 using LL = long long;
 
 constexpr const int N = 16;
-array<int, N> a, b;
-array<LL, 1 << N> v, w, f;
+int a[N], b[N];
+LL v[1<<N], w[1<<N], f[1<<N];
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
+	cin.tie(nullptr)->sync_with_stdio(false);
 	int V, n;
 	cin >> V >> n;
 	for(int i = 1; i <= n; ++i)
@@ -21,7 +18,7 @@ int main() {
 				v[i] = max(v[i], (LL)a[j]);
 				w[i] += b[j];
 			}
-	f.fill(0x3f3f3f3f3f3f3f3f);
+	memset(f, 0x3f, sizeof f);
 	f[0] = 0;
 	for(int i = 0; i < 1 << n; ++i)
 		for(int j = i; ; j = i & j - 1) {
@@ -30,6 +27,6 @@ int main() {
 			if(!j)
 				break;
 		}
-	cout << f[(1 << n) - 1];
+	cout << f[(1 << n) - 1] << endl;
 	return 0;
 }
