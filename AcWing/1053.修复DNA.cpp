@@ -6,7 +6,7 @@ int test_case = 1;
 int n, m;
 char str[N];
 int q[N];
-int tr[N][4], fail[N], flag[N], idx;
+int tr[N][4], fail[N], flg[N], idx;
 int f[N][N];
 
 int get(char x) {
@@ -19,7 +19,6 @@ int get(char x) {
 	else
 		return 3;
 }
-
 void ist() {
 	int u = 0, len = strlen(str + 1);
 	for(int i = 1; i <= len; i++) {
@@ -27,7 +26,7 @@ void ist() {
 		if(!tr[u][k]) tr[u][k] = ++idx;
 		u = tr[u][k];
 	}
-	flag[u] = true;
+	flg[u] = true;
 }
 void build_ACAM() {
 	int hh = 0, tt = -1;
@@ -42,14 +41,15 @@ void build_ACAM() {
 			else {
 				fail[p] = tr[fail[u]][i];
 				q[++tt] = p;
-				flag[p] |= flag[fail[p]];
+				flg[p] |= flg[fail[p]];
 			}
 		}
 	}
 }
+
 int main() {
 	while(cin >> n, n) {
-		memset(flag, false, sizeof(flag));
+		memset(flg, false, sizeof(flg));
 		memset(tr, 0, sizeof(tr));
 		memset(fail, 0, sizeof(fail));
 		idx = 0;
@@ -69,8 +69,8 @@ int main() {
 		for(int i = 0; i < m; i++)
 			for(int j = 0; j <= idx; j++)
 				for(int k = 0; k < 4; k++) {
-					int t = get(str[i + 1]) != k, p = tr[j][k];
-					if(!flag[p]) f[i + 1][p] = min(f[i + 1][p], f[i][j] + t);
+					int t = get(str[i+1]) != k, p = tr[j][k];
+					if(!flg[p]) f[i+1][p] = min(f[i+1][p], f[i][j] + t);
 				}
 		int ans = 0x3f3f3f3f;
 		for(int i = 0; i <= idx; i++) ans = min(ans, f[m][i]);
