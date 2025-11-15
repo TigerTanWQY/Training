@@ -1,69 +1,77 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-struct Node
-{ int i,p,s; }
-fa[15][15][1<<15];
-int A[15], sum[1<<15], F[16][16][1<<15],id[15],T,N;
-
-void upd(Node u,Node v,int k) {
-	F[v.i][v.p][v.s]=min(F[v.i][v.p][v.s],k);
-	if(F[v.i][v.p][v.s]==k) fa[v.i][v.p][v.s]=u;
-}
-
 int main() {
-	scanf("%d",&T);
-	while(T--) {
-		scanf("%d",&N);
-		for(int i=0; i<N; ++i)
-			scanf("%d",&A[i]);
-		for(int s=0; s<(1<<N); s++) {
-			sum[s]=0;
-			for(int i=0; i<N; ++i)
-				if((s&(1<<i))!=0)
-					sum[s]+=A[i];
-		}
-		for(int i=0; i<=N; ++i)
-			for(int p=0; p<=N; p++)
-				for(int s=0; s<(1<<N); s++)
-					F[i][p][s]=0x3f3f3f3f;
-		F[0][0][0]=0;
-		for(int i=0; i<N; ++i)
-			for(int p=0; p<N; p++)
-				for(int s=0; s<(1<<N); s++)
-					if(F[i][p][s]!=0x3f3f3f3f) {
-						Node u{i,p,s};
-						int ns=((1<<N)-1)^s;
-						for(int s0=ns; s0; s0=(s0-1)&ns) if(sum[s0]>F[i][p][s]&&(s0>>p)!=0) {
-								Node v{i+1,p+1+__builtin_ctz(s0>>p),s|s0};
-								upd(u,v,sum[s0]);
-							}
+	cin.tie(nullptr)->sync_with_stdio(false);
+	int _T;
+	cin >> _T;
+	for(int n; _T--; ) {
+		cin >> n;
+		vector<int> a(n);
+		for(int i = 0; i < n; ++i)
+			cin >> a[i];
+		const int u = 1 << n;
+		vector<int> sv, dl, h(u * 2, 0);
+		vector<vector<int>> f(n + 1, vector<int>(u * 2, 0)),
+			g(n + 1, vector<int>(u * 2, 0));
+		for(int l = 0; l < n; ++l) {
+			bool flg = false;
+			for(int s = 0; s < u; ++s) {
+				if(popcount((unsigned)s) == l) {
+					sv.clear(); sv.push_back(0); dl.clear();
+					for(int i = 0; i < n; ++i)
+						if(s >> i & 1)
+							dl.push_back(i);
+						else
+							sv.push_back(i);
+					int uu = 1 << dl.size();
+					for(int i = 0; i < uu; ++i) {
+						h[i] = 0;
+						for(int j = 0; j < (int)dl.size(); ++j)
+							if(i >> j & 1)
+								h[i] += a[dl[j]];
 					}
-
-		Node ans{-1,-1,-1};
-		for(int i=N; i>=1; i--) {
-			for(int p=1; p<=N; p++)
-				if(F[i][p][(1<<N)-1]!=0x3f3f3f3f) {
-					ans = {i,p,(1<<N)-1};
-					break;
+					f[0][0] = 0;
+					for(int i = 1; i < uu; ++i)
+						f[0][i] = 0x3f3f3f3f;
+					for(int i = 1; i < (int)sv.size(); ++i)
+						for(int j = 0; j < uu; ++j) {
+							f[i][j] = 0x3f3f3f3f;
+							if(a[sv[i]] > f[i - 1][j]) {
+								f[i][j] = a[sv[i]];
+								g[i][j] = 0;
+							} else
+								for(int k = j; k; --k &= j)
+									if(a[sv[i]] + h[k] > f[i - 1][j ^ k] &&
+										a[sv[i]] + h[k] < f[i][j]) {
+										f[i][j] = a[sv[i]] + h[k];
+										g[i][j] = k;
+									}
+						}
+					if(f[(int)sv.size() - 1][uu - 1] != 0x3f3f3f3f) {
+						flg = true;
+						break;
+					}
 				}
-			if(ans.i!=-1)
+			}
+			if(flg) {
+				cout << l << '\n';
+				vector<int> p(n);
+				for(int i = 1; i < n; ++i)
+					p[i] = p[i - 1] + 1;
+				int k = (1 << dl.size()) - 1;
+				for(int i = (int)sv.size() - 1; i > 0; --i) {
+					for(int j = 0; j < (int)dl.size(); ++j)
+						if(g[i][k] >> j & 1) {
+							cout << p[dl[j]] + 1 << ' ' << p[sv[i]] + 1 << '\n';
+							for(int t = dl[j]; t < n; ++t)
+								--p[t];
+						}
+					k ^= g[i][k];
+				}
 				break;
-		}
-		printf("%d\n",N-ans.i);
-		for(int i=0; i<N; ++i)
-			id[i]=i+1;
-		while(ans.i!=0) {
-			Node par=fa[ans.i][ans.p][ans.s];
-			int s0=par.s^ans.s;
-			for(int i=0; i<N; ++i)
-				if((s0&(1<<i))!=0&&i!=ans.p-1) {
-					printf("%d %d\n",id[i],id[ans.p-1]);
-					for(int j=i+1; j<N; j++)
-						--id[j];
-				}
-			ans=par;
+			}
 		}
 	}
-	return 0;
+	cout.flush(); return 0;
 }
