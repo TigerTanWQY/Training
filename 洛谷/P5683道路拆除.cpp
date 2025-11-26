@@ -1,33 +1,25 @@
-#include <cstdio>
-#include <cstring>
-#include <queue>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
-const int N = 3003, M = 6003;
+constexpr const int N = 3003, M = 6003;
 int cnte, h[N], to[M], nx[M], dis[3][N];
 
-inline void adde(const int &u, const int &v)
-{
+void adde(int u, int v) {
 	nx[++cnte] = h[u];
 	to[cnte] = v;
 	h[u] = cnte;
 }
 
-inline void bfs(const int &rt, int* const d)
-{
+void bfs(int rt, int* const d) {
 	queue<int> q;
 	d[rt] = 0;
 	q.push(rt);
-	while(!q.empty())
-	{
+	while(!q.empty()) {
 		int u = q.front();
 		q.pop();
-		for(int i = h[u]; i; i = nx[i])
-		{
+		for(int i = h[u]; i; i = nx[i]) {
 			int v = to[i];
-			if(d[v] > d[u] + 1)
-			{
+			if(d[v] > d[u] + 1) {
 				d[v] = d[u] + 1;
 				q.push(v);
 			}
@@ -35,12 +27,10 @@ inline void bfs(const int &rt, int* const d)
 	}
 }
 
-int main()
-{
+int main() {
 	int n, m, s1, t1, s2, t2, ans = 2e9;
 	scanf("%d%d", &n, &m);
-	while(m--)
-	{
+	while(m--) {
 		int u, v;
 		scanf("%d%d", &u, &v);
 		adde(u, v);
