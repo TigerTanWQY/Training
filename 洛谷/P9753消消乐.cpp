@@ -1,45 +1,37 @@
-#include <cstdio>
-#include <cstring>
-#include <unordered_map>
+#include <bits/stdc++.h>
 using namespace std;
 using ULL = unsigned long long;
+#define id second
 
-const int N = 2000003;
-const int P = 191;
-struct st
-{
-	char ch;
-	int id;
-} stk[N];
-unordered_map<ULL, int> t;
-char ch[N];
-ULL Hash[N];
+constexpr const int N = 2e6 + 3, P = 191;
+unordered_map<ULL, int> mp;
+stack<pair<char, int>> stk;
+char s[N];
+ULL hsh[N];
 
-int main()
-{
-	int n, top = 0;
+int main() {
+	cin.tie(nullptr)->sync_with_stdio(false);
+	int n;
+	cin >> n >> s;
+	for(int i = n; i; --i)
+		swap(s[i], s[i-1]);
 	long long ans = 0;
-	scanf("%d%s", &n, ch + 1);
-	t[0] = 1;
+	mp[0] = 1;
+	stk.emplace(0, 0);
 	for(int i = 1; i <= n; ++i)
-		if(!top)
-		{
-			stk[++top] = {ch[i], i};
-			Hash[i] = ch[i] - '0';
-			ans += t[Hash[i]]++;
+		if(stk.size() == 1) {
+			stk.emplace(s[i], i);
+			hsh[i] = s[i] - '0';
+			ans += mp[hsh[i]]++;
+		} else if(stk.top().first == s[i]) {
+			stk.pop();
+			hsh[i] = hsh[stk.top().id];
+			ans += mp[hsh[i]]++;
+		} else {
+			hsh[i] = hsh[stk.top().id] * P + (s[i] - '0');
+			stk.emplace(s[i], i);
+			ans += mp[hsh[i]]++;
 		}
-		else if(stk[top].ch == ch[i])
-		{
-			--top;
-			Hash[i] = Hash[stk[top].id];
-			ans += t[Hash[i]]++;
-		}
-		else
-		{
-			Hash[i] = Hash[stk[top].id] * P + (ch[i] - '0');
-			stk[++top] = {ch[i], i};
-			ans += t[Hash[i]]++;
-		}
-	printf("%lld", ans);
+	cout << ans << endl;
 	return 0;
 }

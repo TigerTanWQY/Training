@@ -1,89 +1,77 @@
-#include<stdio.h>
-#include<bitset>
-#define rev(x) (x>n? (x-n):(x+n))
+#include <bits/stdc++.h>
 using namespace std;
-const int maxn=1005;
+using LL = long long;
+#define M (L+R >> 1)
+#define ls (u<<1)
+#define rs (ls|1)
+
+constexpr const int N = 1e5 + 3;
 int n;
-struct two_sat{
-	int m,ok;
-	int fixed[maxn<<1];
-	bitset<maxn<<1>g[maxn<<1];
-	void get(int x){
-		fixed[x]=1,fixed[rev(x)]=0;
-		for(int i=1;i<=2*n;i++)
-			if(g[x][i]&&fixed[i]==-1)
-				get(i);
+LL a[N], T[N<<2], tg[N<<2];
+
+void upd(int u)
+{ T[u] = T[ls] + T[rs]; }
+
+void pushdown(int u, int L, int R) {
+	if(!tg[u])
+		return;
+	T[ls] += tg[u] * (M-L+1);
+	tg[ls] += tg[u];
+	T[rs] += tg[u] * (R-M);
+	tg[rs] += tg[u];
+	tg[u] = 0;
+}
+
+void buildTree(int u = 1, int L = 1, int R = n) {
+	if(L == R) {
+		T[u] = a[L];
+		return;
 	}
-	void build(){
-		for(int i=1;i<=2*n;i++)
-			g[i].reset(),g[i][i]=1,fixed[i]=-1;
-		for(int i=1;i<=m;i++){
-			int x,y;
-			scanf("%d%d",&x,&y),x=x>0? x:rev(-x),y=y>0? y:rev(-y);
-			g[rev(x)][y]=1,g[rev(y)][x]=1;
-		}
-		for(int k=1;k<=2*n;k++)
-			for(int i=1;i<=2*n;i++)
-				if(g[i][k])
-					g[i]|=g[k];
-		for(int i=1;i<=n;i++)
-			if(g[i][n+i]&&g[n+i][i]){
-				ok=0;
-				return ;
-			}
-		ok=1;
-		for(int i=1;i<=n;i++){
-			if(fixed[i]==-1&&fixed[n+i]==-1&&g[i][n+i])
-				get(n+i);
-			if(fixed[i]==-1&&fixed[n+i]==-1&&g[n+i][i])
-				get(i);
-		}
+	buildTree(ls, L, M);
+	buildTree(rs, M+1, R);
+	upd(u);
+}
+
+void mdf(int qL, int qR, LL w, int u = 1, int L = 1, int R = n) {
+	if(qL <= L && R <= qR) {
+		T[u] += w * (R-L+1);
+		tg[u] += w;
+		return;
 	}
-	void solve(){
-		for(int i=1;i<=2*n;i++)
-			if(fixed[i]==-1)
-				get(i);
-		for(int i=1;i<=n;i++)
-			printf("%d%c",fixed[i],i==n? '\n':' ');
+	pushdown(u, L, R);
+	if(qL <= M)
+		mdf(qL, qR, w, ls, L, M);
+	if(qR > M)
+		mdf(qL, qR, w, rs, M+1, R);
+	upd(u);
+}
+
+LL qry(int qL, int qR, int u = 1, int L = 1, int R = n) {
+	if(qL <= L && R <= qR)
+		return T[u];
+	pushdown(u, L, R);
+	LL res = 0;
+	if(qL <= M)
+		res += qry(qL, qR, ls, L, M);
+	if(qR > M)
+		res += qry(qL, qR, rs, M+1, R);
+	return res;
+}
+
+int main() {
+	cin.tie(nullptr)->sync_with_stdio(false);
+	int _q;
+	cin >> n >> _q;
+	for(int i = 1; i <= n; ++i)
+		a[i] = i;
+	buildTree();
+	for(int op, x, y; _q--; ) {
+		cin >> op >> x >> y;
+		if(op == 1) {
+			LL k; cin >> k;
+			mdf(x, y, k);
+		} else
+			cout << qry(x, y) << '\n';
 	}
-}A,B;
-int main(){
-	scanf("%d%d%d",&n,&A.m,&B.m),A.build(),B.build();
-	if(A.ok==0&&B.ok==0){
-		puts("SIMILAR");
-		return 0;
-	}
-	if(A.ok==0||B.ok==0){
-		if(A.ok)
-			A.solve();
-		if(B.ok)
-			B.solve();
-		return 0;
-	}
-	for(int i=1;i<=2*n;i++){
-		if(A.fixed[i]!=-1&&B.fixed[i]!=-1&&A.fixed[i]!=B.fixed[i]){
-			A.solve();
-			return 0;
-		}
-		if((A.fixed[i]==-1)+(B.fixed[i]==-1)==1){
-			if(A.fixed[i]==-1)
-				A.get(B.fixed[i]==0? i:rev(i)),A.solve();
-			if(B.fixed[i]==-1)
-				B.get(A.fixed[i]==0? i:rev(i)),B.solve();
-			return 0;
-		}
-	}
-	for(int i=1;i<=2*n;i++)
-		for(int j=1;j<=2*n;j++){
-			if(A.g[i][j]&&B.g[i][j]==0&&B.fixed[i]==-1&&B.fixed[i]==-1){
-				B.get(i),B.get(rev(j)),B.solve();
-				return 0;
-			}
-			if(B.g[i][j]&&A.g[i][j]==0&&A.fixed[i]==-1&&A.fixed[j]==-1){
-				A.get(i),A.get(rev(j)),A.solve();
-				return 0;
-			}
-		}
-	puts("SIMILAR");
-	return 0;
+	cout.flush(); return 0;
 }

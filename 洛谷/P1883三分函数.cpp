@@ -1,40 +1,33 @@
-#include <iostream>
-#include <iomanip>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
-int a[3][10003], n;
+constexpr const int N = 1e4 + 3;
+int a[N], b[N], c[N], n;
 
-double f(const double &x) {
-	double ret = 0;
-	for(int i = 1; i <= n; ++i) {
-		double tot = 0;
-		for(int j = 0; j <= 2; ++j)
-			tot = tot * x + a[j][i];
-		ret = max(ret, tot);
-	}
-	return ret;
+double f(double x) {
+	double res = -1e18;
+	for(int i = 1; i <= n; ++i)
+		res = max(res, a[i]*x*x + b[i]*x + c[i]);
+	return res;
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(NULL);
-	cout.tie(NULL);
-	int T;
-	cin >> T;
-	while(T--) {
+	cin.tie(nullptr)->sync_with_stdio(false);
+	int _T;
+	cin >> _T;
+	for(; _T--; cout.put('\n')) {
 		cin >> n;
 		for(int i = 1; i <= n; ++i)
-			cin >> a[0][i] >> a[1][i] >> a[2][i];
+			cin >> a[i] >> b[i] >> c[i];
 		double L = 0, R = 1000;
-		for(int _ = 0; _ < 100; ++_) {
+		for(int _ = 0; _ < 1000; ++_) {
 			double k = (R - L) / 3, LM = L + k, RM = R - k;
 			if(f(LM) > f(RM))
 				L = LM;
 			else
 				R = RM;
 		}
-		cout << fixed << setprecision(4) << f(L) << '\n';
+		cout << fixed << setprecision(4) << f(L);
 	}
-	return 0;
+	cout.flush(); return 0;
 }
