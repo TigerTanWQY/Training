@@ -1,5 +1,4 @@
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
 
 constexpr const int N = 2e6 + 3;
@@ -8,40 +7,38 @@ struct Node
 vector<Node> q[N];
 int a[N], c[N], ans[N];
 
-int lowbit(const int x)
+int lb(int x)
 { return x & -x; }
 
-void modify(int x, const int w = 1) {
-	for(; x < N; x += lowbit(x))
+void mdf(int x, int w = 1) {
+	for(; x < N; x += lb(x))
 		c[x] += w;
 }
 
-int query(int x) {
+int qry(int x) {
 	int res = 0;
-	for(; x; x -= lowbit(x))
+	for(; x; x -= lb(x))
 		res += c[x];
 	return res;
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
+	cin.tie(nullptr)->sync_with_stdio(false);
 	int n, m;
 	cin >> n >> m;
 	for(int i = 1; i <= n; ++i)
 		cin >> a[i];
 	for(int i = 1, L, R, x; i <= m; ++i) {
 		cin >> L >> R >> x;
-		q[L - 1].push_back({i, x, -1});
+		q[L-1].push_back({i, x, -1});
 		q[R].push_back({i, x, 1});
 	}
 	for(int i = 1; i <= n; ++i) {
-		modify(a[i]);
+		mdf(a[i]);
 		for(const auto& j: q[i])
-			ans[j.id] += j.v * query(j.x);
+			ans[j.id] += j.v * qry(j.x);
 	}
 	for(int i = 1; i <= m; ++i)
 		cout << ans[i] << '\n';
-	cout.flush();
-	return 0;
+	cout.flush(); return 0;
 }
