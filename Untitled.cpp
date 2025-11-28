@@ -1,17 +1,24 @@
 #include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/hash_policy.hpp>
 using namespace std;
 
-int main() {
-	cin.tie(nullptr)->sync_with_stdio(false);
-	int n;
-	cin >> n;
-	__gnu_pbds::gp_hash_table<string, bool> mp;
-	for(string s; n--; ) {
-		cin >> s;
-		mp[s] = true;
+int read() {
+	int res = 0;
+	bool flg = false;
+	char ch = getchar_unlocked();
+	for(; ch != '-' && ('0' > ch || ch > '9'); ch = getchar_unlocked());
+	if(ch == '-') {
+		flg = true;
+		ch = getchar_unlocked();
 	}
-	cout << mp.size() << endl;
+	for(; '0' <= ch && ch <= '9'; ch = getchar_unlocked())
+		res = res * 10 + ch - '0';
+	return (flg? -1: 1) * res;
+}
+
+int main() {
+	long long ans = 0;
+	for(int n = read(); n--; )
+		ans += read();
+	printf("%lld\n", ans);
 	return 0;
 }
